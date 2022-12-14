@@ -1,0 +1,40 @@
+version: "3.7"
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: unless-stopped
+    container_name: sqlserver
+    environment:
+      ACCEPT_EULA: Y
+      MSSQL_SA_PASSWORD: yourStrong(!)Password
+      MSSQL_PID: Developer
+    volumes:
+      - mssql-data:/var/opt/mssql
+    ports:
+      - 21433:1433
+
+  sqledge:
+    image: mcr.microsoft.com/azure-sql-edge:latest
+    restart: unless-stopped
+    container_name: sqledge
+    environment:
+      ACCEPT_EULA: Y
+      MSSQL_SA_PASSWORD: yourStrong(!)Password
+      MSSQL_PID: Developer
+    volumes:
+      - sqledge-data:/var/opt/mssql
+    ports:
+      - 11433:1433
+  
+  cloudbeaver:
+    image: dbeaver/cloudbeaver:latest
+    container_name: cloudbeaver
+    restart: unless-stopped
+    volumes:
+      - ./cloudbeaver:/opt/cloudbeaver/workspace
+    ports: 
+      - 18978:8978
+
+volumes:
+  mssql-data:
+  sqledge-data:
