@@ -31,10 +31,11 @@ services:
     container_name: cloudbeaver
     restart: unless-stopped
     volumes:
-      - ./cloudbeaver:/opt/cloudbeaver/workspace
+      - cloudbeaver-data:/opt/cloudbeaver/workspace
     ports: 
       - 18978:8978
 
 volumes:
   mssql-data:
   sqledge-data:
+  cloudbeaver-data:
