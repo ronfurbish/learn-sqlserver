@@ -37,6 +37,7 @@ Note: [SQL Management Studio](https://learn.microsoft.com/en-us/sql/ssms/downloa
     - Password: ``` yourStrong(!)Password ```
 3. Click Connect
 
+##
 
 ### Work In Progress Notes:
 
