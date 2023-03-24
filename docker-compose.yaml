@@ -15,20 +15,33 @@ services:
     restart: always
     ports:
       - 3000:3000
-  mssql-exporter:
-    image: awaragi/prometheus-mssql-exporter
-    restart: always
-    container_name: mssql-exporter
+
+  # Commenting out because it only works for AMD64    
+  # mssql-exporter:
+  #   image: awaragi/prometheus-mssql-exporter
+  #   restart: always
+  #   container_name: mssql-exporter
+  #   environment:
+  #     SERVER: sqlserver
+  #     PORT: 1433
+  #     USERNAME: sa
+  #     PASSWORD: yourStrong(!)Password
+  #     ENCRYPT: true #Default is true
+  #     TRUST_SERVER_CERTIFICATE: true #Default is true
+  #     #DEBUG: #(comma delimited list of enabled logs (optional currently supports app and metrics))
+  #   ports:
+  #     - 4000:4000
+
+  edgesql-exporter:
+    image: justwatch/sql_exporter
+    container_name: edgesql_exporter
+    restart: unless-stopped
     environment:
-      SERVER: sqlserver
-      PORT: 1433
-      USERNAME: sa
-      PASSWORD: yourStrong(!)Password
-      ENCRYPT: true #Default is true
-      TRUST_SERVER_CERTIFICATE: true #Default is true
-      #DEBUG: #(comma delimited list of enabled logs (optional currently supports app and metrics))
+      CONFIG: /config/config.yml
+    volumes:
+      - ./config.yml:/config/config.yml
     ports:
-      - 4000:4000
+      - 9237:9237
 
   prometheus:
     image: prom/prometheus
