@@ -1,31 +1,4 @@
-version: "3.7"
 services:
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    restart: unless-stopped
-    container_name: sqlserver
-    environment:
-      ACCEPT_EULA: Y
-      MSSQL_SA_PASSWORD: yourStrong(!)Password
-      MSSQL_PID: Developer
-    volumes:
-      - mssql-data:/var/opt/mssql
-    ports:
-      - 21433:1433
-
-  sqledge:
-    image: mcr.microsoft.com/azure-sql-edge:latest
-    restart: unless-stopped
-    container_name: sqledge
-    environment:
-      ACCEPT_EULA: Y
-      MSSQL_SA_PASSWORD: yourStrong(!)Password
-      MSSQL_PID: Developer
-    volumes:
-      - sqledge-data:/var/opt/mssql
-    ports:
-      - 11433:1433
-  
   cloudbeaver:
     image: dbeaver/cloudbeaver:latest
     container_name: cloudbeaver
@@ -34,6 +7,97 @@ services:
       - cloudbeaver-data:/opt/cloudbeaver/workspace
     ports: 
       - 18978:8978
+    environment:
+      - TZ=America/New_York
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: always
+    ports:
+      - 3000:3000
+    environment:
+      - TZ=America/New_York
+    
+  mssql-exporter:
+    image: awaragi/prometheus-mssql-exporter
+     #restart: always
+    container_name: mssql-exporter
+    environment:
+      SERVER: sqlserver
+      PORT: 1433
+      USERNAME: sa
+      PASSWORD: yourStrong(!)Password
+      ENCRYPT: true #Default is true
+      TRUST_SERVER_CERTIFICATE: true #Default is true
+      TZ: America/New_York
+       #DEBUG: #(comma delimited list of enabled logs (optional currently supports app and metrics))
+    ports:
+      - 4000:4000
+
+  # edgesql-exporter:
+  #   image: justwatch/sql_exporter
+  #   container_name: edgesql_exporter
+  #   restart: unless-stopped
+  #   environment:
+  #     CONFIG: /config/config.yml
+  #   volumes:
+  #     - ./config.yml:/config/config.yml
+  #   ports:
+  #     - 9237:9237
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    environment:
+      - TZ=America/New_York
+  
+  # sqledge:
+  #   image: mcr.microsoft.com/azure-sql-edge:latest
+  #   restart: unless-stopped
+  #   container_name: sqledge
+  #   environment:
+  #     ACCEPT_EULA: Y
+  #     MSSQL_SA_PASSWORD: yourStrong(!)Password
+  #     MSSQL_PID: Developer
+  #   volumes:
+  #     - sqledge-data:/var/opt/mssql
+  #   ports:
+  #     - 11433:1433
+
+  # sqledge-exporter:
+  #   image: awaragi/prometheus-mssql-exporter
+  #   restart: always
+  #   container_name: sqledge-exporter
+  #   environment:
+  #     SERVER: sqledge
+  #     PORT: 1433
+  #     USERNAME: sa
+  #     PASSWORD: yourStrong(!)Password
+  #     ENCRYPT: true #Default is true
+  #     TRUST_SERVER_CERTIFICATE: true #Default is true
+  #     #DEBUG: #(comma delimited list of enabled logs (optional currently supports app and metrics))
+  #   ports:
+  #     - 14000:4000
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: unless-stopped
+    container_name: sqlserver
+    environment:
+      ACCEPT_EULA: Y
+      MSSQL_SA_PASSWORD: yourStrong(!)Password
+      MSSQL_PID: Developer
+      TZ: America/New_York
+    volumes:
+      - mssql-data:/var/opt/mssql
+    ports:
+      - 21433:1433
 
 volumes:
   mssql-data:
